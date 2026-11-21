@@ -8,17 +8,27 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build Image') {
             steps {
-                echo 'Building application...'
-                bat 'python --version'
-                bat 'python -m py_compile app.py'
+                bat 'docker build -t myapp:latest .'
             }
         }
 
-        stage('Test') {
+        stage('Deploy') {
             steps {
-                bat 'python test_app.py'
+                bat '''
+                    docker rm -f myapp || true
+                    docker run -d \
+                        --name myapp \
+                        -p 8080:8080 \
+                        myapp:latest
+                '''
+            }
+        }
+
+        stage('Verify') {
+            steps {
+                bat 'curl -f http://localhost:8080'
             }
         }
     }
