@@ -20,7 +20,7 @@ pipeline {
                     docker rm -f myapp || true
                     docker run -d \
                         --name myapp \
-                        -p 8080:8080 \
+                        -p 8081:8080 \
                         myapp:latest
                 '''
             }
