@@ -11,13 +11,13 @@ pipeline {
 
         stage('Test') {
             steps {
-                bat 'python3 test_app.py'
+                bat 'python test_app.py'
             }
         }
 
         stage('Validate') {
             steps {
-                bat 'python3 -m py_compile app.py'
+                bat 'python -m py_compile app.py'
                 echo 'Validation successful'
             }
         }
