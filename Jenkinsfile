@@ -11,13 +11,14 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building application...'
-                sh 'python3 -m py_compile app.py'
+                bat 'python --version'
+                bat 'python -m py_compile app.py'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'python3 test_app.py'
+                bat 'python test_app.py'
             }
         }
     }
