@@ -37,7 +37,7 @@ pipeline {
 
         stage('Health Check') {
             steps {
-                sh 'curl -f http://localhost:8081'
+                bat 'curl -f http://localhost:8081'
             }
         }
     }
