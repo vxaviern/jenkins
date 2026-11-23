@@ -5,7 +5,6 @@ pipeline {
     // 1. Environment variables
     environment {
         APP_NAME = 'myapp'
-        IMAGE_TAG = ''
         APP_PORT = '8081'
     }
 
@@ -18,20 +17,18 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    // Checkout returns Git information
                     def scmInfo = checkout scm
 
-                    // Get commit SHA directly from checkout result
                     def commitId = scmInfo.GIT_COMMIT
 
                     if (!commitId) {
-                        error('Git commit ID was not returned by checkout')
+                        error('Git commit ID is missing')
                     }
 
-                    env.IMAGE_TAG = commitId.substring(0, 12)
+                    env.GIT_SHA_TAG = commitId.substring(0, 12)
 
                     echo "Full Git commit: ${commitId}"
-                    echo "Docker image tag: ${env.IMAGE_TAG}"
+                    echo "Docker image tag: ${env.GIT_SHA_TAG}"
                 }
             }
         }
@@ -56,9 +53,9 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                echo "Building ${env.APP_NAME}:${env.IMAGE_TAG}"
+                echo "Building ${env.APP_NAME}:${env.GIT_SHA_TAG}"
 
-                bat 'docker build -t %APP_NAME%:%IMAGE_TAG% .'
+                bat 'docker build -t %APP_NAME%:%GIT_SHA_TAG% .'
             }
         }
 
@@ -100,7 +97,7 @@ pipeline {
                             --name myapp ^
                             -p 8081:8080 ^
                             -e APP_SECRET ^
-                            %APP_NAME%:%IMAGE_TAG%
+                             %APP_NAME%:%GIT_SHA_TAG%
                     '''
                 }
             }
@@ -130,7 +127,9 @@ pipeline {
         }
 
         success {
-            echo "Deployment successful: ${env.APP_NAME}:${env.IMAGE_TAG}"
+            success {
+            echo "Deployment successful: ${env.APP_NAME}:${env.GIT_SHA_TAG}"
+}
         }
 
         failure {
