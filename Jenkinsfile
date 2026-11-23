@@ -17,12 +17,20 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                checkout scm
-
                 script {
-                    env.IMAGE_TAG = env.GIT_COMMIT.take(12)
+                    // Checkout returns Git information
+                    def scmInfo = checkout scm
 
-                    echo "Git commit: ${env.GIT_COMMIT}"
+                    // Get commit SHA directly from checkout result
+                    def commitId = scmInfo.GIT_COMMIT
+
+                    if (!commitId) {
+                        error('Git commit ID was not returned by checkout')
+                    }
+
+                    env.IMAGE_TAG = commitId.substring(0, 12)
+
+                    echo "Full Git commit: ${commitId}"
                     echo "Docker image tag: ${env.IMAGE_TAG}"
                 }
             }
