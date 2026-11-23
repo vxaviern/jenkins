@@ -15,22 +15,15 @@ pipeline {
 
     stages {
 
-        // Explicit checkout from Git
         stage('Checkout') {
             steps {
                 checkout scm
 
                 script {
-                    env.IMAGE_TAG = bat(
-                        returnStdout: true,
-                        script: '@git rev-parse --short=12 HEAD'
-                    ).trim()
+                    env.IMAGE_TAG = env.GIT_COMMIT.take(12)
 
-                    echo "Git commit: ${env.IMAGE_TAG}"
-
-                    if (!env.IMAGE_TAG) {
-                        error('Could not retrieve Git commit SHA')
-                    }
+                    echo "Git commit: ${env.GIT_COMMIT}"
+                    echo "Docker image tag: ${env.IMAGE_TAG}"
                 }
             }
         }
@@ -55,8 +48,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                echo "Image name: ${env.APP_NAME}"
-                echo "Image tag: ${env.IMAGE_TAG}"
+                echo "Building ${env.APP_NAME}:${env.IMAGE_TAG}"
 
                 bat 'docker build -t %APP_NAME%:%IMAGE_TAG% .'
             }
