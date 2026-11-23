@@ -61,12 +61,12 @@ pipeline {
 
         // 4. Manual approval
         stage('Approval') {
-            when {
-                expression {
-                    env.BRANCH_NAME == 'main' ||
-                    env.GIT_BRANCH == 'origin/main'
-                }
-            }
+            // when {
+            //     expression {
+            //         env.BRANCH_NAME == 'main' ||
+            //         env.GIT_BRANCH == 'origin/main'
+            //     }
+            // }
 
             steps {
                 input message: 'Approve deployment to local Docker?', 
@@ -76,12 +76,12 @@ pipeline {
 
         // 5. Deploy using Jenkins credentials
         stage('Deploy') {
-            when {
-                expression {
-                    return env.GIT_BRANCH == 'origin/main' ||
-                           env.GIT_BRANCH == 'main'
-                }
-            }
+            // when {
+            //     expression {
+            //         return env.GIT_BRANCH == 'origin/main' ||
+            //                env.GIT_BRANCH == 'main'
+            //     }
+            // }
 
             steps {
                 withCredentials([
@@ -104,12 +104,12 @@ pipeline {
         }
 
         stage('Health Check') {
-            when {
-                expression {
-                    return env.GIT_BRANCH == 'origin/main' ||
-                           env.GIT_BRANCH == 'main'
-                }
-            }
+            // when {
+            //     expression {
+            //         return env.GIT_BRANCH == 'origin/main' ||
+            //                env.GIT_BRANCH == 'main'
+            //     }
+            // }
 
             steps {
                 bat '''
