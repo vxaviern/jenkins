@@ -20,14 +20,17 @@ pipeline {
             steps {
                 checkout scm
 
-                // 2. Script: calculate Git commit SHA
                 script {
                     env.IMAGE_TAG = bat(
                         returnStdout: true,
                         script: '@git rev-parse --short=12 HEAD'
                     ).trim()
 
-                    echo "Building image: ${env.APP_NAME}:${env.IMAGE_TAG}"
+                    echo "Git commit: ${env.IMAGE_TAG}"
+
+                    if (!env.IMAGE_TAG) {
+                        error('Could not retrieve Git commit SHA')
+                    }
                 }
             }
         }
@@ -52,6 +55,9 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
+                echo "Image name: ${env.APP_NAME}"
+                echo "Image tag: ${env.IMAGE_TAG}"
+
                 bat 'docker build -t %APP_NAME%:%IMAGE_TAG% .'
             }
         }
@@ -60,8 +66,8 @@ pipeline {
         stage('Approval') {
             when {
                 expression {
-                    return env.GIT_BRANCH == 'origin/main' ||
-                           env.GIT_BRANCH == 'main'
+                    env.BRANCH_NAME == 'main' ||
+                    env.GIT_BRANCH == 'origin/main'
                 }
             }
 
