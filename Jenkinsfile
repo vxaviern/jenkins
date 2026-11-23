@@ -120,20 +120,17 @@ pipeline {
         }
     }
 
-    // 6. Post-build actions
     post {
         always {
             echo 'Pipeline execution finished.'
         }
 
         success {
-            success {
             echo "Deployment successful: ${env.APP_NAME}:${env.GIT_SHA_TAG}"
-}
         }
 
         failure {
-            echo 'Pipeline failed. Check the failed stage.'
+            echo 'Pipeline failed.'
         }
     }
 }
